@@ -1,0 +1,19 @@
+<!-- navbar.component.html -->
+<nav class="navbar navbar-default bootsnav navbar-sticky navbar-scrollspy" data-minus-value-desktop="70" data-minus-value-mobile="55" data-speed="1000">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu">
+        <i class="fa fa-bars"></i>
+      </button>
+      <a class="navbar-brand" href="index.html">Escuela <span> Santa Olga de Kiev</span></a>
+    </div>
+    <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
+      <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+        <li class="scroll active"><a href="#home">Inicio</a></li>
+        <li class="scroll"><a href="#works">Nosotros</a></li>
+        <li class="scroll"><a href="#explore">Actas de reunión</a></li>
+        <li class="scroll"><a (click)="openLoginModal()">Iniciar sesión</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>

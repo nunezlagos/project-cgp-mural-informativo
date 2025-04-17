@@ -1,0 +1,20 @@
+.auth-dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.my-4 {
+  margin: 1.5rem 0;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
