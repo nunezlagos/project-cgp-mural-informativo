@@ -6,7 +6,7 @@ import { CircularesComponent } from './features/circulares/circulares.component'
 
 export const routes: Routes = [
   { path: '', redirectTo: 'mural', pathMatch: 'full' },
-  { path: 'mural', component: MuralComponent }
-  { path: 'circulares', component: CircularesComponent }
+  { path: 'mural', component: MuralComponent },
+  { path: 'circulares', component: CircularesComponent },
   { path: 'administracion', component: AdminComponent }
 ];
