@@ -13,12 +13,16 @@ export class ActasService {
 
   constructor(private http: HttpClient) {}
 
-  async getAll() {
+  async getAll(): Promise<Acta[]> {
     try {
-      const actas = await this.http.get<Acta[]>(this.baseUrl).toPromise();
-      this.actas$.set(actas || []);
+      // Usamos '?.' para acceder a 'results' y asignamos un arreglo vacío por defecto
+      const response = await this.http.get<{ results: Acta[] }>(this.baseUrl).toPromise();
+      const actas = response?.results || [];  // Si response o results es undefined, asignamos un arreglo vacío
+      this.actas$.set(actas);  // Actualizamos el estado de actas
+      return actas;
     } catch (error) {
       console.error('Error al obtener actas:', error);
+      return [];  // Retorna un arreglo vacío en caso de error
     }
   }
 
@@ -28,13 +32,14 @@ export class ActasService {
       return acta;
     } catch (error) {
       console.error(`Error al obtener acta con ID ${id}:`, error);
+      return null;
     }
   }
 
   async create(acta: Acta) {
     try {
       await this.http.post(this.baseUrl, acta).toPromise();
-      this.getAll();
+      await this.getAll();  // Recargamos los datos después de la creación
     } catch (error) {
       console.error('Error al crear acta:', error);
     }
@@ -43,7 +48,7 @@ export class ActasService {
   async update(id: number, acta: Acta) {
     try {
       await this.http.put(`${this.baseUrl}/${id}`, acta).toPromise();
-      this.getAll();
+      await this.getAll();  // Recargamos los datos después de la actualización
     } catch (error) {
       console.error('Error al actualizar acta:', error);
     }
@@ -51,10 +56,16 @@ export class ActasService {
 
   async delete(id: number) {
     try {
+      console.log(`Enviando solicitud para eliminar la acta con ID: ${id}`);
       await this.http.delete(`${this.baseUrl}/${id}`).toPromise();
-      this.getAll();
+      console.log(`El acta con ID: ${id} ha sido eliminada exitosamente.`);
+
+      // Recargar los datos
+      await this.getAll();
+      console.log('Datos recargados después de la eliminación.');
     } catch (error) {
       console.error('Error al eliminar acta:', error);
     }
   }
+
 }

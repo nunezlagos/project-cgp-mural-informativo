@@ -13,12 +13,16 @@ export class CircularesService {
 
   constructor(private http: HttpClient) {}
 
-  async getAll() {
+  async getAll(): Promise<Circular[]> {
     try {
-      const circulares = await this.http.get<Circular[]>(this.baseUrl).toPromise();
-      this.circulares$.set(circulares || []);
+      // Usamos '?.' para acceder a 'results' y asignamos un arreglo vacío por defecto
+      const response = await this.http.get<{ results: Circular[] }>(this.baseUrl).toPromise();
+      const circulares = response?.results || [];  // Si response o results es undefined, asignamos un arreglo vacío
+      this.circulares$.set(circulares);  // Actualizamos el estado de circulares
+      return circulares;
     } catch (error) {
       console.error('Error al obtener circulares:', error);
+      return [];  // Retorna un arreglo vacío en caso de error
     }
   }
 
@@ -28,13 +32,14 @@ export class CircularesService {
       return circular;
     } catch (error) {
       console.error(`Error al obtener circular con ID ${id}:`, error);
+      return null;
     }
   }
 
   async create(circular: Circular) {
     try {
       await this.http.post(this.baseUrl, circular).toPromise();
-      this.getAll();
+      await this.getAll();  // Recargamos los datos después de la creación
     } catch (error) {
       console.error('Error al crear circular:', error);
     }
@@ -43,7 +48,7 @@ export class CircularesService {
   async update(id: number, circular: Circular) {
     try {
       await this.http.put(`${this.baseUrl}/${id}`, circular).toPromise();
-      this.getAll();
+      await this.getAll();  // Recargamos los datos después de la actualización
     } catch (error) {
       console.error('Error al actualizar circular:', error);
     }
@@ -52,7 +57,7 @@ export class CircularesService {
   async delete(id: number) {
     try {
       await this.http.delete(`${this.baseUrl}/${id}`).toPromise();
-      this.getAll();
+      await this.getAll();  // Recargamos los datos después de la eliminación
     } catch (error) {
       console.error('Error al eliminar circular:', error);
     }

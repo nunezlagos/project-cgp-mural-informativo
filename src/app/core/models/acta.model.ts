@@ -1,5 +1,5 @@
 export interface Acta {
-  id?: number;
+  id?:   number | undefined;
   titulo: string;
   cuerpo: string;
   autor: string;

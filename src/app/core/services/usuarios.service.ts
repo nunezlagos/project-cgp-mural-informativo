@@ -28,6 +28,7 @@ export class UsuariosService {
       return usuario;
     } catch (error) {
       console.error(`Error al obtener usuario con ID ${id}:`, error);
+      return null;
     }
   }
 

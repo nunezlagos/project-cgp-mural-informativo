@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-circulares',
-  imports: [],
+  standalone: true,
   templateUrl: './circulares.component.html',
   styleUrl: './circulares.component.css'
 })
