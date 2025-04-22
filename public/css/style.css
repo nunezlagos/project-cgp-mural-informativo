@@ -318,19 +318,17 @@ nav.navbar.bootsnav .navbar-toggle i{color: #ff545a;}
     align-items:  center;
     font-size:  14px;
     color:  #fff;
-    width:  170px;
-    height:  70px;
+
     background:  #ff545a;
     text-transform:  capitalize;
-    margin-left:  30px;
-    border-radius: 3px;
+
     -webkit-transition: 0.3s linear;
     -moz-transition: 0.3s linear;
     -ms-transition: 0.3s linear;
     -o-transition: 0.3s linear;
     transition: 0.3s linear;
 }
-.welcome-hero-btn:hover{/*background: #fd4043;*/background: #f43032;}
+.welcome-hero-btn:hover{/*background: #fd4043;*/background: #aa3234d2;}
 
 .welcome-hero-btn svg {
     width:  14px;
@@ -719,7 +717,7 @@ nav.navbar.bootsnav .navbar-toggle i{color: #ff545a;}
 /*-------------------------------------
         10. Blog
 --------------------------------------*/
-.blog{padding:70px 0 90px;}
+.blog{padding:25px 0 90px;}
 .blog-content{margin-top: 80px;}
 
 .single-blog-item{

@@ -1,5 +1,5 @@
 export interface Circular {
-  id?: number;
+  id?:   number | undefined;
   titulo: string;
   cuerpo: string;
   autor: string;

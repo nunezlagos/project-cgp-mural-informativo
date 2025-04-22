@@ -1,1 +1,180 @@
-<p>admin works!</p>
+<section id="blog" class="blog">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Panel de Documentos</h2>
+      <p>Administra actas de reunión y circulares informativas.</p>
+    </div>
+
+    <div class="container-fluid py-4">
+      <div class="card shadow-sm rounded">
+        <div class="card-body">
+
+          <!-- Formulario en modal -->
+          <div class="m-3">
+            <ng-template #formTemplate>
+              <h2 mat-dialog-title>
+                {{ tipo === 'acta' ? 'Nueva Acta' : 'Nueva Circular' }}
+              </h2>
+              <div [formGroup]="form" class="m-3" style="margin: 20px;">
+                <div class="form-group mb-3">
+                  <label for="titulo">Título</label>
+                  <input id="titulo" type="text" class="form-control" formControlName="titulo" required />
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="autor">Autor</label>
+                  <input id="autor" type="text" class="form-control" formControlName="autor" required />
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="cuerpo">Cuerpo</label>
+                  <textarea id="cuerpo" class="form-control" formControlName="cuerpo" rows="5" required></textarea>
+                </div>
+              </div>
+
+              <mat-dialog-actions align="end">
+                <button mat-button mat-dialog-close>Cancelar</button>
+                <button mat-button color="primary" (click)="submit()" [disabled]="form.invalid">Guardar</button>
+              </mat-dialog-actions>
+            </ng-template>
+          </div>
+
+          <mat-tab-group>
+            <mat-tab label="Circulares">
+              <div class="centered-tab-content">
+                <div class="d-flex mb-3 w-100" style="    text-align: center; margin: 10px;">
+                  <button class="btn-core btn-add" (click)="openForm('circular')">
+
+                    <span>Nueva Circular Informativa</span>
+                  </button>
+                </div>
+
+                <div class="table-responsive w-100">
+                  <table mat-table [dataSource]="dataSourceCirculares" class="table table-hover table-bordered align-middle">
+                    <ng-container matColumnDef="autor">
+                      <th mat-header-cell *matHeaderCellDef>Autor</th>
+                      <td mat-cell *matCellDef="let c">{{ c.autor }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="titulo">
+                      <th mat-header-cell *matHeaderCellDef>Título</th>
+                      <td mat-cell *matCellDef="let c">{{ c.titulo }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="descripción">
+                      <th mat-header-cell *matHeaderCellDef>Descripción</th>
+                      <td mat-cell *matCellDef="let c">
+                        <!-- Botón para ver descripción con icono y texto -->
+                        <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                          <button class="btn-core btn-info" n (click)="mostrarDescripcion(c)">
+                           <!-- Icono de visibilidad -->
+                          Ver Descripción
+                        </button>
+                      </div>
+                      </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="acciones">
+                      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                      <td mat-cell *matCellDef="let c" class="acciones-columna">
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                          <!-- Editar con icono y texto -->
+                          <button class="btn-core btn-edit" (click)="editar(c, 'circular')">
+                             <!-- Icono de editar -->
+                            Editar
+                          </button>
+                        </div>
+
+                        <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                          <!-- Eliminar con icono y texto -->
+
+
+                          <button class="btn-core btn-delete" (click)="confirmDelete(c.id, 'circular', c.titulo)">
+                             <!-- Icono de eliminar -->
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackById"></tr>
+                  </table>
+                </div>
+              </div>
+            </mat-tab>
+            <!-- Tab Actas -->
+            <mat-tab label="Actas">
+              <div class="centered-tab-content">
+                <div class="d-flex mb-3 w-100" style="text-align: center; margin: 10px;">
+                  <button class="btn-core btn-add" (click)="openForm('acta')">
+                    <span>Nuevo Acta</span>
+                  </button>
+                </div>
+
+                <div class="table-responsive w-100">
+                  <table mat-table [dataSource]="dataSourceActas" class="table table-hover table-bordered align-middle">
+                    <ng-container matColumnDef="autor">
+                      <th mat-header-cell *matHeaderCellDef>Autor</th>
+                      <td mat-cell *matCellDef="let a">{{ a.autor }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="titulo">
+                      <th mat-header-cell *matHeaderCellDef>Título</th>
+                      <td mat-cell *matCellDef="let a">{{ a.titulo }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="descripción">
+                      <th mat-header-cell *matHeaderCellDef>Descripción</th>
+                      <td mat-cell *matCellDef="let a">
+                        <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                          <button class="btn-core btn-info" (click)="mostrarDescripcion(a)">
+
+                           Información
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="acciones">
+                      <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+                      <td mat-cell *matCellDef="let a" class="acciones-cell">
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                          <!-- Editar con icono y texto -->
+                          <button class="btn-core btn-edit" (click)="editar(a, 'acta')">
+                             <!-- Icono de editar -->
+                            Editar
+                          </button>
+                        </div>
+
+                        <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                          <!-- Eliminar con icono y texto -->
+                          <button class="btn-core btn-delete" (click)="confirmDelete(a.id, 'acta', a.titulo)">
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+
+
+
+
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackById"></tr>
+                  </table>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- Tab Circulares -->
+
+          </mat-tab-group>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

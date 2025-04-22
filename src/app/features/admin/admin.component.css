@@ -1,0 +1,67 @@
+.btn-core {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-transform: capitalize;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+  margin: 3px;
+  width: 100%;
+  max-width: 200px;
+}
+
+/* Botón Agregar (Rojo intenso) */
+.btn-add {
+  background-color: #e60000;
+}
+.btn-add:hover {
+  background-color: #cc0000;
+}
+
+/* Botón Editar (Amarillo) */
+.btn-edit {
+  background-color: #ffc107;
+  color: #000;
+}
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+/* Botón Eliminar (Ultra Red) */
+.btn-delete {
+  background-color: #ff1a1a;
+}
+.btn-delete:hover {
+  background-color: #cc0000;
+}
+
+/* Botón Info (Celeste) */
+.btn-info {
+  background-color: #e0f7fa;
+  color: #0277bd;
+  border: 1px solid #0288d1;
+}
+.btn-info:hover {
+  background-color: #b2ebf2;
+}
+
+/* Íconos dentro del botón */
+.btn-core mat-icon {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+/* Solo reducir font-size en pantallas pequeñas */
+@media (max-width: 576px) {
+  .btn-core {
+    font-size: 11px;
+  }
+}
