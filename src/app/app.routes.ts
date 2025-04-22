@@ -6,8 +6,7 @@ import { CircularesComponent } from './features/circulares/circulares.component'
 import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'mural', pathMatch: 'full' },
-  { path: 'mural', component: MuralComponent },
+  { path: '', component: MuralComponent },  // Ahora esta es la raíz directamente
   { path: 'circulares', component: CircularesComponent },
-  { path: 'administracion', component: AdminComponent, canActivate: [AuthGuard] }  // Aplica el guard aquí
+  { path: 'administracion', component: AdminComponent, canActivate: [AuthGuard] }
 ];
