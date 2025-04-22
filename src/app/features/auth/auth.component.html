@@ -1,28 +1,43 @@
+<h2 mat-dialog-title>Iniciar Sesión</h2>
 
-  <h2 mat-dialog-title>Iniciar Sesión</h2>
-  <mat-dialog-content class="auth-dialog-content">
-    <button mat-stroked-button color="primary" class="full-width mb-4">
-      Iniciar sesión con SSO
-    </button>
+<mat-dialog-content class="auth-dialog-content">
+  <mat-divider class="my-4">o</mat-divider>
 
-    <mat-divider class="my-4">o</mat-divider>
+  <form (ngSubmit)="onLoginSubmit()" #loginForm="ngForm">
+    <div class="mb-5">
+      <label for="usuario" class="form-label">Usuario</label>
+      <input
+        type="text"
+        class="form-control"
+        id="usuario"
+        placeholder="admin"
+        required
+        [(ngModel)]="usuario"
+        name="usuario"
+      />
+    </div>
 
-    <form>
-      <mat-form-field class="full-width" appearance="fill">
-        <mat-label>Correo electrónico</mat-label>
-        <input matInput type="email" />
-      </mat-form-field>
+    <div class="my-5">
+      <label for="password" class="form-label">Contraseña</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        placeholder="••••••••"
+        required
+        [(ngModel)]="contrasena"
+        name="contrasena"
+      />
+    </div>
 
-      <mat-form-field class="full-width" appearance="fill">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" />
-      </mat-form-field>
+    <div *ngIf="errorLogin" class="alert alert-danger mt-3">
+      Usuario o contraseña incorrectos
+    </div>
 
-      <div class="mt-4">
-        <button mat-flat-button color="primary" class="full-width">
-          Iniciar sesión
-        </button>
-      </div>
-    </form>
-  </mat-dialog-content>
-
+    <div class="d-grid mt-4">
+      <button type="submit" class="btn btn-primary" [disabled]="!loginForm.valid">
+        Iniciar sesión
+      </button>
+    </div>
+  </form>
+</mat-dialog-content>
