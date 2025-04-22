@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { sha256 } from 'js-sha256';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Usuario } from '../models/usuario.model';
 import { environment } from '../../../environments/environment';
@@ -15,10 +14,29 @@ export class UsuarioService {
   constructor(private http: HttpClient) {}
 
   private async sha256Twice(text: string): Promise<string> {
-    const hash1 = sha256(text);
-    const hash2 = sha256(hash1);
-    return hash2;
+    try {
+      console.log('Texto recibido:', text);
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+
+      const firstHashBuffer = await crypto.subtle.digest('SHA-256', data);
+      console.log('Primer hash generado');
+
+      const secondHashBuffer = await crypto.subtle.digest('SHA-256', firstHashBuffer);
+      console.log('Segundo hash generado');
+
+      const hashFinal = Array.from(new Uint8Array(secondHashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      console.log('Hash final:', hashFinal);
+      return hashFinal;
+    } catch (error) {
+      console.error('Error al generar el hash:', error);
+      throw error;
+    }
   }
+
 
   /** LOGIN */
   async login(usuario: string, contrasena: string): Promise<boolean> {
