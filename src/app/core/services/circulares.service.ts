@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment'; // Importamos e
   providedIn: 'root',
 })
 export class CircularesService {
-  private baseUrl = `${environment.apiUrl}/api/v1/circulares`; // Usamos la URL de la API desde el entorno
+  private baseUrl = `https://cgp-worker.asistente-nunez.workers.dev/api/v1/circulares`; // Usamos la URL de la API desde el entorno
 
   circulares$ = signal<Circular[]>([]);
 

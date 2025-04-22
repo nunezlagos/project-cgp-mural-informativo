@@ -1,61 +1,108 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Usuario } from '../models/usuario.model'; // Importamos el modelo Usuario
-import { environment } from '../../../environments/environment'; // Importamos el entorno
+import { sha256 } from 'js-sha256';
+import { firstValueFrom, Observable } from 'rxjs';
+import { Usuario } from '../models/usuario.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class UsuariosService {
-  private baseUrl = `${environment.apiUrl}/api/v1/usuarios`; // Usamos la URL de la API desde el entorno
+export class UsuarioService {
 
-  usuarios$ = signal<Usuario[]>([]);
+  private baseUrl = `https://cgp-worker.asistente-nunez.workers.dev/api/v1/usuarios`;
 
   constructor(private http: HttpClient) {}
 
-  async getAll() {
+  private async sha256Twice(text: string): Promise<string> {
+    const hash1 = sha256(text);
+    const hash2 = sha256(hash1);
+    return hash2;
+  }
+
+  /** LOGIN */
+  async login(usuario: string, contrasena: string): Promise<boolean> {
     try {
-      const usuarios = await this.http.get<Usuario[]>(this.baseUrl).toPromise();
-      this.usuarios$.set(usuarios || []);
+      const hash = await this.sha256Twice(contrasena); // Hash de la contraseña ingresada
+      console.log('Contraseña ingresada:', contrasena);
+      console.log('Hash de la contraseña ingresada:', hash);
+
+      const response = await firstValueFrom(this.http.get<{ results: Usuario[] }>(this.baseUrl));
+      console.log('Respuesta de la API:', response);
+
+      const usuarios = response.results; // Ahora accedemos a 'results' para obtener los usuarios
+      console.log('Usuarios obtenidos:', usuarios);
+
+      const user = usuarios.find(u => u.usuario === usuario);
+      console.log('Usuario encontrado:', user);
+
+      if (user) {
+        // Hash de la contraseña almacenada en la base de datos
+        console.log('Hash de la contraseña en la base de datos:', user.contrasena);
+
+        // Verifica si los dos hashes coinciden
+        const isPasswordValid = user.contrasena === hash;
+        console.log('Las contraseñas coinciden:', isPasswordValid);
+
+        if (isPasswordValid) {
+          localStorage.setItem('usuario', JSON.stringify(user));
+          console.log('Login exitoso');
+          return true;
+        }
+      }
+
+      console.log('Usuario no encontrado o las contraseñas no coinciden');
+      return false; // Si no se encuentra el usuario o los hashes no coinciden
     } catch (error) {
-      console.error('Error al obtener usuarios:', error);
+      console.error('Error al autenticar:', error);
+      return false;
     }
   }
 
-  async getById(id: number) {
-    try {
-      const usuario = await this.http.get<Usuario>(`${this.baseUrl}/${id}`).toPromise();
-      return usuario;
-    } catch (error) {
-      console.error(`Error al obtener usuario con ID ${id}:`, error);
-      return null;
-    }
+
+  /** LOGOUT */
+  logout() {
+    localStorage.removeItem('usuario');
   }
 
-  async create(usuario: Usuario) {
-    try {
-      await this.http.post(this.baseUrl, usuario).toPromise();
-      this.getAll();
-    } catch (error) {
-      console.error('Error al crear usuario:', error);
-    }
+  /** GET localStorage usuario */
+  getUsuarioAutenticado(): Usuario | null {
+    const data = localStorage.getItem('usuario');
+    return data ? JSON.parse(data) : null;
   }
 
-  async update(id: number, usuario: Usuario) {
-    try {
-      await this.http.put(`${this.baseUrl}/${id}`, usuario).toPromise();
-      this.getAll();
-    } catch (error) {
-      console.error('Error al actualizar usuario:', error);
-    }
+  /** BOOLEAN si está autenticado */
+  estaAutenticado(): boolean {
+    return !!this.getUsuarioAutenticado();
   }
 
-  async delete(id: number) {
-    try {
-      await this.http.delete(`${this.baseUrl}/${id}`).toPromise();
-      this.getAll();
-    } catch (error) {
-      console.error('Error al eliminar usuario:', error);
-    }
+  /** OBTENER todos los usuarios */
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.baseUrl);
+  }
+
+  /** OBTENER usuario por ID */
+  getUsuarioPorId(id: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.baseUrl}/${id}`);
+  }
+
+  /** CREAR nuevo usuario */
+  async crearUsuario(usuario: string, contrasena: string): Promise<any> {
+    const hash = await this.sha256Twice(contrasena);
+    return firstValueFrom(this.http.post(this.baseUrl, { usuario, contrasena: hash }));
+  }
+
+  /** ACTUALIZAR usuario */
+  async actualizarUsuario(id: number, usuario: string, contrasena: string): Promise<any> {
+    const hash = await this.sha256Twice(contrasena);
+    return firstValueFrom(this.http.put(`${this.baseUrl}/${id}`, { usuario, contrasena: hash }));
+  }
+
+  /** ELIMINAR usuario */
+  eliminarUsuario(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('usuario');  // Ahora verifica si hay un usuario guardado en localStorage
   }
 }
