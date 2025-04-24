@@ -10,32 +10,132 @@
 
     <div class="blog-content">
       <div class="row">
-        <div class="col-md-4 col-sm-6" *ngFor="let c of circulares">
+        <!-- Mostrar el último elemento de forma destacada con col-lg-12 -->
+        <div class="col-lg-12" *ngIf="circulares.length > 0">
           <div class="single-blog-item">
             <div class="single-blog-item-img">
-              <img src="images/blog/b1.jpg" alt="blog image" />
+              <div class="circular-informativa">
+                <div class="overlay"></div>
+                <div class="contenido-circular">
+                  <div class="etiqueta-circular">Circular Informativa</div>
+                  <div class="titulo-circular">{{ circulares[circulares.length - 1].titulo }}</div>
+                </div>
+              </div>
             </div>
-            <div class="single-blog-item-txt">
-              <h2>
-                <a href="#">{{ c.titulo }}</a>
-              </h2>
-              <h4>
-                Publicado por: <a>{{ c.autor }}</a>
-              </h4>
 
-              <p>
-                {{ expandido[c.id] ? c.cuerpo : limitarTexto(c.cuerpo, 20) }}
+            <div class="single-blog-item-txt">
+              <h4>Publicado por: {{ circulares[circulares.length - 1].autor }}</h4>
+
+              <p *ngIf="!expandido[circulares[circulares.length - 1].id]">
+                <span [innerHTML]="limitarTexto(circulares[circulares.length - 1].cuerpo, 15)"></span>
+                <a (click)="toggleExpand(circulares[circulares.length - 1].id)" style="cursor: pointer;">Leer más...</a>
               </p>
 
-              <a (click)="toggleExpand(c.id)" style="cursor: pointer; font-weight: bold;">
-                {{ expandido[c.id] ? 'Leer menos ▲' : 'Leer más ▼' }}
-              </a>
+              <p *ngIf="expandido[circulares[circulares.length - 1].id]">
+                <span [innerHTML]="circulares[circulares.length - 1].cuerpo"></span>
+                <a (click)="toggleExpand(circulares[circulares.length - 1].id)" style="cursor: pointer;">Leer menos...</a>
+              </p>
 
-              <h5 class="mt-2">{{ c.created_at | date: 'longDate' }}</h5>
+              <h4>{{ circulares[circulares.length - 1].created_at | date: 'longDate' }}</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mostrar el resto de los elementos en 3 columnas -->
+        <div class="col-md-4 col-sm-6" *ngFor="let c of circulares.slice(0, circulares.length - 1)">
+          <div class="single-blog-item">
+            <div class="single-blog-item-img">
+              <div class="circular-informativa">
+                <div class="overlay"></div>
+                <div class="contenido-circular">
+                  <div class="etiqueta-circular">Circular Informativa</div>
+                  <div class="titulo-circular">{{ c.titulo }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="single-blog-item-txt">
+              <h4>Publicado por: {{ c.autor }}</h4>
+
+              <p *ngIf="!expandido[c.id]">
+                <span [innerHTML]="limitarTexto(c.cuerpo, 15)"></span>
+                <a (click)="toggleExpand(c.id)" style="cursor: pointer;">Leer más...</a>
+              </p>
+
+              <p *ngIf="expandido[c.id]">
+                <span [innerHTML]="c.cuerpo"></span>
+                <a (click)="toggleExpand(c.id)" style="cursor: pointer;">Leer menos...</a>
+              </p>
+
+              <h4>{{ c.created_at | date: 'longDate' }}</h4>
             </div>
           </div>
         </div>
       </div>
+
+
+
     </div>
   </div>
+
 </section>
+<style>
+  .circular-informativa {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background-image: url('/images/blog/c1.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/images/blog/c1.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.95;
+    /* Ajusta esto si la imagen es muy fuerte */
+    z-index: 1;
+  }
+
+  .contenido-circular {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .etiqueta-circular {
+    background-color: #fff176;
+    color: #000;
+    font-weight: bold;
+    padding: 1px 4px;
+    /* border-radius: 6px; */
+    font-size: 1.55rem;
+    text-transform: uppercase;
+    display: inline-block;
+    max-width: fit-content;
+  }
+
+  .titulo-circular {
+    background-color: #ffffff;
+    color: #010101;
+    font-weight: bold;
+    padding: 1px 3px;
+    /* border-radius: 6px; */
+    font-size: 1.45rem;
+    text-transform: uppercase;
+    display: inline-block;
+    max-width: fit-content;
+  }
+</style>

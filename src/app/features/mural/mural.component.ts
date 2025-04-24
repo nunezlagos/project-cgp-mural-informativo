@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CircularesService } from '../../core/services/circulares.service';
-
 @Component({
   selector: 'app-mural',
   standalone: true,

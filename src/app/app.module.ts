@@ -6,6 +6,8 @@ import { AppRoutingModule } from './app-routing.module'; // Importa AppRoutingMo
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { AuthComponent } from './features/auth/auth.component';
+import { HttpClientModule } from '@angular/common/http';
+
 
 // AppModule ahora solo importa los módulos necesarios.
 @NgModule({
@@ -13,7 +15,8 @@ import { AuthComponent } from './features/auth/auth.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: []
 })
