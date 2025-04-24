@@ -1,23 +1,26 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module'; // Importa AppRoutingModule
+import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from '@angular/common/http';
 
-// Importa los componentes
+// Importa los componentes autónomos
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { AuthComponent } from './features/auth/auth.component';
-import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
 
-
-// AppModule ahora solo importa los módulos necesarios.
 @NgModule({
-  declarations: [
-  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDialogModule,
+    // Importa los componentes autónomos en el módulo
+    NavbarComponent,
+    FooterComponent,
+    AuthComponent,
   ],
-  providers: []
+  providers: [],
+  // Elimina la propiedad 'bootstrap' ya que no es compatible con componentes autónomos
 })
-export class AppModule {}
+export class AppModule { }

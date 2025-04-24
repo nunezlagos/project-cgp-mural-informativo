@@ -5,14 +5,18 @@
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu">
         <i class="fa fa-bars"></i>
       </button>
-      <a class="navbar-brand" href="">Escuela <span> Santa Olga de Kiev</span></a>
+      <a class="navbar-brand" routerLink="/">Escuela <span>Santa Olga de Kiev</span></a>
     </div>
     <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
       <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
-        <li class="scroll active"><a href="">Inicio</a></li>
-        <li class="scroll"><a href="nosotros">Nosotros</a></li>
-        <li class="scroll"><a href="actas">Actas de reunión</a></li>
-        <!-- <li class="scroll"><a (click)="openLoginModal()">Iniciar sesión</a></li> -->
+        <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="['/']">Inicio</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/nosotros']">Nosotros</a>
+        </li>
+        <!-- <li routerLinkActive="active"><a [routerLink]="['/actas']">Actas de reunión</a></li> -->
+        <!-- <li routerLinkActive="active"><a (click)="openLoginModal()">Iniciar sesión</a></li> -->
       </ul>
     </div>
   </div>
