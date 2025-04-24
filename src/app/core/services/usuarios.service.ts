@@ -78,16 +78,20 @@ export class UsuarioService {
   }
 
 
-  /** LOGOUT */
   logout() {
-    localStorage.removeItem('usuario');
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('usuario');
+    }
   }
 
-  /** GET localStorage usuario */
   getUsuarioAutenticado(): Usuario | null {
-    const data = localStorage.getItem('usuario');
-    return data ? JSON.parse(data) : null;
+    if (typeof window !== 'undefined') {
+      const data = window.localStorage.getItem('usuario');
+      return data ? JSON.parse(data) : null;
+    }
+    return null;
   }
+
 
   /** BOOLEAN si está autenticado */
   estaAutenticado(): boolean {
@@ -121,6 +125,6 @@ export class UsuarioService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('usuario');  // Ahora verifica si hay un usuario guardado en localStorage
+    return typeof window !== 'undefined' && !!window.localStorage.getItem('usuario');
   }
 }
