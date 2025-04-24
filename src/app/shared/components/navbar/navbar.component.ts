@@ -6,8 +6,7 @@ import { AuthComponent } from '../../../features/auth/auth.component';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,  // Si el componente es autónomo
-  imports: [CommonModule, RouterModule],  // Asegúrate de que RouterModule esté aquí
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })

@@ -15,7 +15,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-admin',
-  standalone: true,
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
   imports: [
@@ -103,7 +102,7 @@ export class AdminComponent implements OnInit {
       .then(() => {
         this.tipo === 'acta' ? this.loadActas() : this.loadCirculares();
         this.formRef.close();
-        this.editandoId = null; // 🧼 limpiamos el estado
+        this.editandoId = null;
       })
       .catch(err => {
         console.error(`Error ${this.editandoId ? 'editando' : 'creando'} ${this.tipo}:`, err);
@@ -112,7 +111,7 @@ export class AdminComponent implements OnInit {
 
   editar(item: any, tipo: 'acta' | 'circular') {
     this.tipo = tipo;
-    this.editandoId = item.id; // 👈 Guardamos el ID para saber que estamos editando
+    this.editandoId = item.id;
 
     this.form = this.fb.group({
       titulo: [item.titulo, Validators.required],
@@ -165,6 +164,7 @@ export class AdminComponent implements OnInit {
     this.dialog.open(DescripcionDialogComponent, { data: item, width: '500px' });
   }
 }
+
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,

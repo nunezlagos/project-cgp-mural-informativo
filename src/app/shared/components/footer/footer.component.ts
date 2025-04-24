@@ -4,7 +4,6 @@ import { AuthComponent } from '../../../features/auth/auth.component';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css']
 })

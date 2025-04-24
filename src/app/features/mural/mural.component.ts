@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { CircularesService } from '../../core/services/circulares.service';
 @Component({
   selector: 'app-mural',
-  standalone: true,
   templateUrl: './mural.component.html',
   styleUrl: './mural.component.css',
   imports: [CommonModule]
