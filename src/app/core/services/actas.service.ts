@@ -2,18 +2,21 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Acta } from '../models/acta.model'; // Importamos el modelo Acta
 import { environment } from '../../../environments/environment'; // Importamos el entorno
+import { BaseCrudService } from './base-crud.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ActasService {
-  private baseUrl = `https://cgp-worker.asistente-nunez.workers.dev/api/v1/actas`; // Usamos la URL de la API desde el entorno
+export class ActasService extends BaseCrudService<Acta> {
+  protected baseUrl = `https://cgp-worker.asistente-nunez.workers.dev/api/v1/actas`; // Usamos la URL de la API desde el entorno
 
   actas$ = signal<Acta[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(http: HttpClient) {
+    super(http);
+  }
 
-  async getAll(): Promise<Acta[]> {
+  override async getAll(): Promise<Acta[]> {
     try {
       // Usamos '?.' para acceder a 'results' y asignamos un arreglo vacío por defecto
       const response = await this.http.get<{ results: Acta[] }>(this.baseUrl).toPromise();
@@ -26,35 +29,39 @@ export class ActasService {
     }
   }
 
-  async getById(id: number) {
+  override async getById(id: number): Promise<Acta> {
     try {
       const acta = await this.http.get<Acta>(`${this.baseUrl}/${id}`).toPromise();
-      return acta;
+      return acta || {} as Acta;
     } catch (error) {
       console.error(`Error al obtener acta con ID ${id}:`, error);
-      return null;
+      throw error;
     }
   }
 
-  async create(acta: Acta) {
+  override async create(acta: Partial<Acta>): Promise<Acta> {
     try {
-      await this.http.post(this.baseUrl, acta).toPromise();
+      const result = await this.http.post<Acta>(this.baseUrl, acta).toPromise();
       await this.getAll();  // Recargamos los datos después de la creación
+      return result || {} as Acta;
     } catch (error) {
       console.error('Error al crear acta:', error);
+      throw error;
     }
   }
 
-  async update(id: number, acta: Acta) {
+  override async update(id: number, acta: Partial<Acta>): Promise<Acta> {
     try {
-      await this.http.put(`${this.baseUrl}/${id}`, acta).toPromise();
+      const result = await this.http.put<Acta>(`${this.baseUrl}/${id}`, acta).toPromise();
       await this.getAll();  // Recargamos los datos después de la actualización
+      return result || {} as Acta;
     } catch (error) {
       console.error('Error al actualizar acta:', error);
+      throw error;
     }
   }
 
-  async delete(id: number) {
+  override async delete(id: number): Promise<void> {
     try {
       console.log(`Enviando solicitud para eliminar la acta con ID: ${id}`);
       await this.http.delete(`${this.baseUrl}/${id}`).toPromise();
@@ -65,7 +72,11 @@ export class ActasService {
       console.log('Datos recargados después de la eliminación.');
     } catch (error) {
       console.error('Error al eliminar acta:', error);
+      throw error;
     }
   }
 
+  protected getEntityName(): string {
+    return 'acta';
+  }
 }

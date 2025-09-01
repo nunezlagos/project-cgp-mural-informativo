@@ -6,8 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, NgFor } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { ActasService } from '../../core/services/actas.service';
-import { CircularesService } from '../../core/services/circulares.service';
+import { AdminFacade } from '../../core/facades/admin.facade';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +14,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-admin',
+  standalone: true,
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
   imports: [
@@ -43,8 +43,7 @@ export class AdminComponent implements OnInit {
 
   private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
-  private actasService = inject(ActasService);
-  private circularesService = inject(CircularesService);
+  private adminFacade = inject(AdminFacade);
   editandoId: number | null = null;
   tab: any;
 
@@ -56,7 +55,7 @@ export class AdminComponent implements OnInit {
   trackById = (_: number, item: any) => item.id;
 
   loadActas() {
-    this.actasService.getAll()
+    this.adminFacade.loadActas()
       .then(data => {
         this.dataSourceActas.data = data;
       })
@@ -66,7 +65,7 @@ export class AdminComponent implements OnInit {
   }
 
   loadCirculares() {
-    this.circularesService.getAll()
+    this.adminFacade.loadCirculares()
       .then(data => {
         this.dataSourceCirculares.data = data;
       })
@@ -92,11 +91,11 @@ export class AdminComponent implements OnInit {
 
     const action = this.editandoId
       ? (this.tipo === 'acta'
-          ? this.actasService.update(this.editandoId, data)
-          : this.circularesService.update(this.editandoId, data))
+          ? this.adminFacade.saveActa({ ...data, id: this.editandoId })
+          : this.adminFacade.saveCircular({ ...data, id: this.editandoId }))
       : (this.tipo === 'acta'
-          ? this.actasService.create(data)
-          : this.circularesService.create(data));
+          ? this.adminFacade.validateAndSaveActa(data)
+          : this.adminFacade.validateAndSaveCircular(data));
 
     action
       .then(() => {
@@ -106,12 +105,13 @@ export class AdminComponent implements OnInit {
       })
       .catch(err => {
         console.error(`Error ${this.editandoId ? 'editando' : 'creando'} ${this.tipo}:`, err);
+        // Mostrar mensaje de error al usuario si es necesario
       });
   }
 
   editar(item: any, tipo: 'acta' | 'circular') {
     this.tipo = tipo;
-    this.editandoId = item.id;
+    this.editandoId = item.id; // 👈 Guardamos el ID para saber que estamos editando
 
     this.form = this.fb.group({
       titulo: [item.titulo, Validators.required],
@@ -140,8 +140,8 @@ export class AdminComponent implements OnInit {
       if (result?.delete === true) {
         try {
           const action = result.tipo === 'acta'
-            ? this.actasService.delete(result.id)
-            : this.circularesService.delete(result.id);
+            ? this.adminFacade.deleteActa(result.id)
+            : this.adminFacade.deleteCircular(result.id);
 
           await action;
 
@@ -164,7 +164,6 @@ export class AdminComponent implements OnInit {
     this.dialog.open(DescripcionDialogComponent, { data: item, width: '500px' });
   }
 }
-
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
