@@ -1,13 +1,16 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Circular } from '../models/circular.model'; // Importamos el modelo Circular
-import { environment } from '../../../environments/environment'; // Importamos el entorno
+import { Circular } from '../models/circular.model';
+import { environment } from '../../../environments/environment';
 import { BaseCrudService } from './base-crud.service';
+import { ICircularesService } from '../interfaces/domain-services.interface';
+import { IReactiveState } from '../interfaces/crud-operations.interface';
 
+// Dependency Inversion Principle - Implementación de interfaces específicas
 @Injectable({
   providedIn: 'root',
 })
-export class CircularesService extends BaseCrudService<Circular> {
+export class CircularesService extends BaseCrudService<Circular> implements ICircularesService {
   protected baseUrl = `https://cgp-worker.asistente-nunez.workers.dev/api/v1/circulares`; // Usamos la URL de la API desde el entorno
 
   circulares$ = signal<Circular[]>([]);
@@ -73,5 +76,149 @@ export class CircularesService extends BaseCrudService<Circular> {
 
   protected getEntityName(): string {
     return 'circular';
+  }
+
+  // Implementación de ICircularesService - Single Responsibility Principle
+  async getCircularesByCategory(category: string): Promise<Circular[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/category/${category}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting circulares by category:', error);
+      throw error;
+    }
+  }
+
+  async getActiveCirculares(): Promise<Circular[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/active`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting active circulares:', error);
+      throw error;
+    }
+  }
+
+  async publishCircular(id: number): Promise<Circular> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}/publish`, {
+        method: 'PATCH'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      this.notifyDataChange(); // Actualizar estado reactivo
+      return result;
+    } catch (error) {
+      console.error('Error publishing circular:', error);
+      throw error;
+    }
+  }
+
+  async archiveCircular(id: number): Promise<Circular> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}/archive`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Error al archivar circular');
+      }
+      const result = await response.json();
+      this.notifyDataChange(); // Actualizar estado reactivo
+      return result;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  // Métodos requeridos por ICircularesService
+  async getCircularesByAutor(autor: string): Promise<Circular[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}?autor=${autor}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener circulares por autor');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  async getCircularesByDateRange(startDate: Date, endDate: Date): Promise<Circular[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener circulares por rango de fechas');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  async searchCircularesByTitle(title: string): Promise<Circular[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}?search=${encodeURIComponent(title)}`);
+      if (!response.ok) {
+        throw new Error('Error al buscar circulares por título');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  getState(): Circular[] {
+    // Implementación básica del estado reactivo
+    return [];
+  }
+
+  updateState(data: Circular[]): void {
+    // Implementación básica de actualización de estado
+    console.log('Estado actualizado:', data);
+  }
+
+  // Hook methods - Template Method Pattern
+  protected override beforeCreate(data: Partial<Circular>): Partial<Circular> {
+    // Validaciones específicas para circulares
+    return {
+        ...data,
+        created_at: new Date().toISOString(),
+        status: 'borrador'
+      };
+  }
+
+  protected override afterCreate(circular: Circular): void {
+    console.log(`Circular creada: ${circular.titulo}`);
+    this.notifyDataChange();
+  }
+
+  protected override afterUpdate(circular: Circular): void {
+    console.log(`Circular actualizada: ${circular.titulo}`);
+    this.notifyDataChange();
+  }
+
+  protected override afterDelete(id: number): void {
+    console.log(`Circular eliminada con ID: ${id}`);
+    this.notifyDataChange();
+  }
+
+  private notifyDataChange(): void {
+    // Método para notificar cambios en los datos
+    // Aquí se puede implementar lógica para actualizar señales o notificar componentes
   }
 }

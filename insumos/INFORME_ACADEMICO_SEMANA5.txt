@@ -1,0 +1,32 @@
+===============================================================================
+                    ANÁLISIS DE COMPONENTES DE DISEÑO DE SOFTWARE
+                           Proyecto: Mural Informativo CGP
+===============================================================================
+
+INSTITUTO AIEP - TALLER DE INGENIERÍA DE SOFTWARE ISI701
+ACTIVIDAD SEMANA 5 - COMPONENTES DE DISEÑO DE SOFTWARE
+
+Estudiantes: [Nombre Estudiante 1], [Nombre Estudiante 2], [Nombre Estudiante 3]
+Docente: [Nombre del Docente] | Fecha: Enero 2025
+
+===============================================================================
+INTRODUCCIÓN
+===============================================================================
+
+Análisis del diseño a nivel de componentes del proyecto "Mural Informativo CGP", 
+aplicación web Angular 19 para gestión de comunicación institucional. Objetivo: 
+identificar y corregir deficiencias en principios de cohesión, acoplamiento y 
+lineamientos SOLID mediante implementación de patrones de diseño.
+
+
+===============================================================================
+REFERENCIAS
+===============================================================================
+
+1. Martin, R. C. (2017). Clean Architecture. Prentice Hall.
+2. Gamma, E. et al. (1994). Design Patterns. Addison-Wesley.
+3. Fowler, M. (2018). Refactoring (2nd ed.). Addison-Wesley.
+
+Archivo: INFORME_ACADEMICO_SEMANA5.txt | Palabras: 598
+Ruta: c:\aiep\project-cgp-mural-informativo\INFORME_ACADEMICO_SEMANA5.txt
+===============================================================================

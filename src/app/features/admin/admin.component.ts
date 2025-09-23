@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild, inject, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { DialogManagementService } from '../../core/services/dialog-management.service';
+import { FormManagementService } from '../../core/services/form-management.service';
 
 @Component({
   selector: 'app-admin',
@@ -41,9 +43,11 @@ export class AdminComponent implements OnInit {
   dataSourceCirculares = new MatTableDataSource<any>([]);
   displayedColumns: string[] = ['autor','titulo','descripción', 'acciones'];
 
-  private dialog = inject(MatDialog);
-  private fb = inject(FormBuilder);
+  // Dependency Inversion Principle - Inyección de dependencias especializadas
   private adminFacade = inject(AdminFacade);
+  private dialogService = inject(DialogManagementService);
+  private formService = inject(FormManagementService);
+  
   editandoId: number | null = null;
   tab: any;
 
@@ -74,20 +78,26 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  // Single Responsibility Principle - Delegación al servicio de formularios
   openForm(tipo: 'acta' | 'circular') {
     this.tipo = tipo;
-    this.form = this.fb.group({
-      titulo: ['', Validators.required],
-      autor: ['', Validators.required],
-      cuerpo: ['', Validators.required],
-    });
-    this.formRef = this.dialog.open(this.formTemplate, { width: '400px' });
+    this.form = this.formService.createEmptyForm();
+    this.formRef = this.dialogService.openFormDialog(this.formTemplate, '400px');
   }
 
+  // Single Responsibility Principle - Uso del servicio de formularios para validación
   submit() {
-    if (this.form.invalid || !this.tipo) return;
+    if (!this.tipo) return;
 
-    const data = this.form.value;
+    // Validación usando el servicio especializado
+    const validation = this.formService.validateForm(this.form);
+    if (!validation.isValid) {
+      this.formService.markAllFieldsAsTouched(this.form);
+      console.error('Errores de validación:', validation.errors);
+      return;
+    }
+
+    const data = this.formService.extractFormData(this.form);
 
     const action = this.editandoId
       ? (this.tipo === 'acta'
@@ -109,30 +119,25 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  // Single Responsibility Principle - Delegación al servicio de formularios
   editar(item: any, tipo: 'acta' | 'circular') {
     this.tipo = tipo;
-    this.editandoId = item.id; // 👈 Guardamos el ID para saber que estamos editando
+    this.editandoId = item.id;
 
-    this.form = this.fb.group({
-      titulo: [item.titulo, Validators.required],
-      autor: [item.autor, Validators.required],
-      cuerpo: [item.cuerpo, Validators.required],
-    });
-
-    this.formRef = this.dialog.open(this.formTemplate, { width: '400px' });
+    // Uso del servicio especializado para crear formulario de edición
+    this.form = this.formService.createEditForm(item);
+    this.formRef = this.dialogService.openFormDialog(this.formTemplate, '400px');
   }
 
+  // Single Responsibility Principle - Delegación al servicio de diálogos
   confirmDelete(id: number, tipo: 'acta' | 'circular', titulo: string) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmar Eliminación',
-        message: `¿Seguro que quieres borrar este elemento?`,
-        id: id,
-        tipo: tipo,  // Asegúrate de pasar el tipo correctamente aquí
-        titulo: titulo
-      },
-      width: '350px'
-    });
+    const dialogRef = this.dialogService.openConfirmDialog({
+      title: 'Confirmar Eliminación',
+      message: `¿Seguro que quieres borrar este elemento?`,
+      id: id,
+      tipo: tipo,
+      titulo: titulo
+    }, '350px');
 
     dialogRef.afterClosed().subscribe(async result => {
       console.log('Resultado del diálogo:', result);
@@ -160,8 +165,9 @@ export class AdminComponent implements OnInit {
 
 
 
+  // Single Responsibility Principle - Delegación al servicio de diálogos
   mostrarDescripcion(item: any) {
-    this.dialog.open(DescripcionDialogComponent, { data: item, width: '500px' });
+    this.dialogService.openDescriptionDialog(item, '500px');
   }
 }
 @Component({
